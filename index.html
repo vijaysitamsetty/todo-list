@@ -162,7 +162,7 @@
         </table>
       </div>
 
-      <label class="clear-checkbox">
+      <label class="clear-checkbox" style="display: none">
         <input
           type="checkbox"
           id="clearCompleted"
@@ -179,6 +179,7 @@
       const todotablebody = document.querySelector(".todotable table tbody");
       const completedBody = document.getElementById("completedBody");
       const clearCompletedCheckbox = document.getElementById("clearCompleted");
+      const checkbox = document.querySelector(".clear-checkbox");
 
       let editIndex = null;
 
@@ -231,6 +232,11 @@
 
           completedBody.innerHTML += row;
         });
+        if (completedTasks.length == 0) {
+          checkbox.style.display = "none";
+        } else {
+          checkbox.style.display = "block";
+        }
       }
 
       function addOrUpdateTask() {
@@ -257,6 +263,21 @@
         taskInput.value = "";
         deadlineInput.value = "";
         tododisp();
+      }
+      function edit(index) {
+        let tasks = JSON.parse(localStorage.getItem("todotasks")) || [];
+        let task = tasks[index];
+
+        // Set input values to selected task
+        taskInput.value = task.text;
+        deadlineInput.value = task.dl;
+
+        // Set edit index
+        editIndex = index;
+
+        // Change button text to "Update Task"
+        taskBtn.textContent = "Update Task";
+        taskBtn.classList.add("update-btn"); // Add update button style
       }
 
       function markDone(i) {
