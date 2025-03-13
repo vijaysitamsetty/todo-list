@@ -1,1 +1,162 @@
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  user-select: none;
+}
+
+body {
+  background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.con {
+  width: 90%;
+  max-width: 800px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative;
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+input[type="text"],
+input[type="date"],
+button {
+  width: 100%;
+  max-width: 500px;
+  padding: 10px;
+  font-size: 16px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background-color: #218838;
+}
+
+.update-btn {
+  background-color: #dbac11;
+}
+
+.update-btn:hover {
+  background-color: #e9b706;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+thead {
+  background-color: #007bff;
+  color: white;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+  background-color: #e3f2fd;
+}
+
+.action-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 5px;
+}
+
+.edit-btn {
+  color: #ffc107;
+}
+
+.delete-btn {
+  color: #dc3545;
+}
+
+.done-btn {
+  color: #28a745;
+}
+
+.edit-btn:hover {
+  color: #d39e00;
+}
+
+.delete-btn:hover {
+  color: #a71d2a;
+}
+
+.done-btn:hover {
+  color: #1e7e34;
+}
+
+.clear-checkbox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 10px;
+  justify-content: center;
+}
+
+.clear-checkbox input {
+  margin-right: 10px;
+}
+
+@media (max-width: 600px) {
+  .con {
+    width: 95%;
+    padding: 15px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 8px;
+  }
+
+  input[type="text"], input[type="date"], button {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .action-btn {
+    font-size: 14px;
+  }
+}
