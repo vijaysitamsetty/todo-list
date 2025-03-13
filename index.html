@@ -1,40 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ToDO List</title>
-    <script
-      src="https://kit.fontawesome.com/679a3c8215.js"
-      crossorigin="anonymous"
-    ></script>
-    <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo List Manager</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+        user-select: none;
+      }
+      body {
+        background-color: #f4f4f4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+        padding: 20px;
+      }
+      .con {
+        width: 80%;
+        max-width: 800px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        position: relative;
+      }
+      h1 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        margin-bottom: 20px;
+      }
+
+      /* text wrap for task */
+      .todotable table th th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+      }
+      thead {
+        background-color: #007bff;
+        color: white;
+      }
+      tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      tbody tr:hover {
+        background-color: #e3f2fd;
+      }
+      .action-btn {
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: 16px;
+        margin: 0 5px;
+        padding: 5px;
+      }
+      .edit-btn {
+        color: #ffc107;
+      }
+      .delete-btn {
+        color: #dc3545;
+      }
+      .done-btn {
+        color: #28a745;
+      }
+
+      .edit-btn:hover {
+        color: #d39e00;
+      }
+      .delete-btn:hover {
+        color: #a71d2a;
+      }
+      .done-btn:hover {
+        color: #1e7e34;
+        color: white;
+      }
+      input,
+      button {
+        margin: 10px 0;
+        padding: 8px;
+        font-size: 16px;
+      }
+      button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #218838;
+      }
+      .update-btn {
+        background-color: #dbac11;
+      }
+      .update-btn:hover {
+        background-color: #e9b706;
+      }
+      .clear-checkbox {
+        position: absolute;
+        bottom: 5px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .clear-checkbox input {
+        margin-right: 10px;
+      }
+    </style>
   </head>
   <body>
-    <div class="container">
-      <header id="main-header" class="bg-warning text-white p-4 mb-3">
-        <div class="todoheading">
-          <h1 id="header-title">
-            ToDo List
-            <!-- <img src="images/images/icon.png" alt="" /> -->
-            <i class="fa-solid fa-pen-to-square"></i>
-          </h1>
-        </div>
-      </header>
-      <div class="todo-input">
-        <input
-          type="text"
-          class="form-control"
-          id="inputField"
-          placeholder="Enter item to do..."
-        />
-        <button type="button" class="btn btn-primary" id="addToDo">
-          <h4>Add</h4>
-        </button>
+    <div class="con">
+      <h1>Todo List Manager</h1>
+
+      <input type="text" id="taskInput" placeholder="Enter task" />
+      <input type="date" id="deadlineInput" />
+      <button id="taskBtn" onclick="addOrUpdateTask()">Add Task</button>
+
+      <div class="todotable" style="display: none">
+        <h2>To-Do List</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>SlNO</th>
+              <th>Task</th>
+              <th>Deadline</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
-      <div class="to-dos" id="toDoContainer"></div>
+
+      <div class="completedtable" style="display: none">
+        <h2>Completed Tasks</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>SlNO</th>
+              <th>Task</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="completedBody"></tbody>
+        </table>
+      </div>
+
+      <label class="clear-checkbox">
+        <input
+          type="checkbox"
+          id="clearCompleted"
+          onclick="clearCompletedTasks()"
+        />
+        Clear Completed Tasks
+      </label>
     </div>
 
-    <script src="index2.js"></script>
+    <script>
+      const taskInput = document.getElementById("taskInput");
+      const deadlineInput = document.getElementById("deadlineInput");
+      const taskBtn = document.getElementById("taskBtn");
+      const todotablebody = document.querySelector(".todotable table tbody");
+      const completedBody = document.getElementById("completedBody");
+      const clearCompletedCheckbox = document.getElementById("clearCompleted");
+
+      let editIndex = null;
+
+      function tododisp() {
+        const tasks = JSON.parse(localStorage.getItem("todotasks")) || [];
+        todotablebody.innerHTML = "";
+
+        document.querySelector(".todotable").style.display = tasks.length
+          ? "block"
+          : "none";
+
+        tasks.forEach((task, index) => {
+          const row = `<tr>
+                    <td>${index + 1}</td>
+                   <td style="max-width: 100px; white-space: normal;word-wrap:break-word">
+  ${task.text}
+</td>
+
+                    <td>${task.dl}</td>
+                    <td>
+                       
+                        <button class="action-btn edit-btn" onclick="edit(${index})"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete-btn" onclick="deletetask(${index})"><i class="fas fa-trash"></i></button>
+                         <button class="action-btn done-btn" onclick="markDone(${index})"><i class="fas fa-check"></i></button>
+                    </td>
+                </tr>`;
+
+          todotablebody.innerHTML += row;
+        });
+
+        completedDisp();
+      }
+
+      function completedDisp() {
+        const completedTasks =
+          JSON.parse(localStorage.getItem("completedTasks")) || [];
+        completedBody.innerHTML = "";
+
+        document.querySelector(".completedtable").style.display =
+          completedTasks.length ? "block" : "none";
+
+        completedTasks.forEach((task, index) => {
+          const row = `<tr>
+                <td>${index + 1}</td>
+                <td style="max-width: 100px; white-space: normal;word-wrap:break-word">${
+                  task.text
+                }</td>
+                <td>✅ Done</td>
+            </tr>`;
+
+          completedBody.innerHTML += row;
+        });
+      }
+
+      function addOrUpdateTask() {
+        const taskText = taskInput.value.trim();
+        const deadline = deadlineInput.value;
+        if (taskText === "" || deadline === "") {
+          alert("Task and Deadline cannot be empty!");
+          return;
+        }
+
+        let tasks = JSON.parse(localStorage.getItem("todotasks")) || [];
+
+        if (editIndex !== null) {
+          tasks[editIndex] = { text: taskText, dl: deadline };
+          editIndex = null;
+          taskBtn.textContent = "Add Task";
+          taskBtn.classList.remove("update-btn");
+        } else {
+          tasks.push({ text: taskText, dl: deadline });
+        }
+
+        localStorage.setItem("todotasks", JSON.stringify(tasks));
+
+        taskInput.value = "";
+        deadlineInput.value = "";
+        tododisp();
+      }
+
+      function markDone(i) {
+        let tasks = JSON.parse(localStorage.getItem("todotasks")) || [];
+        let completedTasks =
+          JSON.parse(localStorage.getItem("completedTasks")) || [];
+
+        if (confirm("Are you sure you want to mark this task as done?")) {
+          completedTasks.push({ text: tasks[i].text });
+          tasks.splice(i, 1);
+          localStorage.setItem("todotasks", JSON.stringify(tasks));
+          localStorage.setItem(
+            "completedTasks",
+            JSON.stringify(completedTasks)
+          );
+          tododisp();
+        }
+      }
+
+      function clearCompletedTasks() {
+        if (clearCompletedCheckbox.checked) {
+          if (confirm("Are you sure you want to clear all completed tasks?")) {
+            localStorage.removeItem("completedTasks");
+            completedDisp();
+          } else {
+            clearCompletedCheckbox.checked = false;
+          }
+          clearCompletedCheckbox.checked = false;
+        }
+      }
+
+      tododisp();
+    </script>
   </body>
 </html>
