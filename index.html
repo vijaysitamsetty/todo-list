@@ -194,13 +194,9 @@
         tasks.forEach((task, index) => {
           const row = `<tr>
                     <td>${index + 1}</td>
-                   <td style="max-width: 100px; white-space: normal;word-wrap:break-word">
-  ${task.text}
-</td>
-
-                    <td>${task.dl}</td>
-                    <td>
-                       
+                   <td style="max-width: 100px; white-space: normal;word-wrap:break-word">${task.text}</td>
+                      <td>${task.dl}</td>
+                    <td> 
                         <button class="action-btn edit-btn" onclick="edit(${index})"><i class="fas fa-edit"></i></button>
                         <button class="action-btn delete-btn" onclick="deletetask(${index})"><i class="fas fa-trash"></i></button>
                          <button class="action-btn done-btn" onclick="markDone(${index})"><i class="fas fa-check"></i></button>
@@ -213,6 +209,17 @@
         completedDisp();
       }
 
+      function deletetask(index) {
+  let tasks = JSON.parse(localStorage.getItem("todotasks")) || [];
+
+  if (confirm("Are you sure you want to delete this task?")) {
+    tasks.splice(index, 1);
+    localStorage.setItem("todotasks", JSON.stringify(tasks));
+    tododisp(); // Refresh the task list
+  }
+}
+
+      
       function completedDisp() {
         const completedTasks =
           JSON.parse(localStorage.getItem("completedTasks")) || [];
